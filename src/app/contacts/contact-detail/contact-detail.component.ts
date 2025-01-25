@@ -11,4 +11,6 @@ export class ContactDetailComponent {
   contacts: Contact[] = [
   new Contact('1', 'R. Kent Jackson', 'jacksonk@byui.edu', '208-496-3771', 'images/jacksonk.jpg', null),
   new Contact('2', 'Rex Barzee', 'barzeer@byui.edu','208-496-3768','images/barzeer.jpg', null)]
+
+  @Input() contact: Contact;
 }
