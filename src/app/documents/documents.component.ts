@@ -8,5 +8,7 @@ import { Component } from '@angular/core';
   styleUrl: './documents.component.css'
 })
 export class DocumentsComponent {
-
+  selectedDocument: Document;
+  
+  
 }
