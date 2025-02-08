@@ -6,12 +6,5 @@ export class Contact {
     public phone: string,
     public imageUrl: string,
     public group: Contact[]
-  ) {
-    this.id = id;
-    this.name = name;
-    this.email = email;
-    this.phone = phone;
-    this.imageUrl = imageUrl;
-    this.group = group;
-  }
+  ) {}
 }
