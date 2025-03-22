@@ -1,7 +1,7 @@
 <div class="panel panel-default " >
     <div class="panel-heading clearfix" >
         <h1 class="">{{ contact.name}}</h1>
-        <img src="{{contact.imageUrl}}" alt="{{ contact.name}}" class="img-rounded ">
+        <img src="{{contact.imageUrl}}" alt="{{ contact.name}}" class="img-rounded " style="max-height: 150px;">
         <a (click)="onDelete()" class="btn btn-danger pull-right">Delete</a>
         <a [routerLink]="['/contacts', contact.id, 'edit']" class="btn btn-primary pull-right" style="margin-right: 5px;">Edit</a>
     </div>

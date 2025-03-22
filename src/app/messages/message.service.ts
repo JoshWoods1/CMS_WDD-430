@@ -16,20 +16,30 @@ export class MessageService {
   }
 
   getMessages(): any {
-    this.http.get('https://jw-cms-5d7d3-default-rtdb.firebaseio.com/messages.json').subscribe(
-      (messages: Message[] | null) => {
-        if (!messages) {
-          this.messages = [];
-          return;
+    this.http.get<{ message: string; messages: Message[] }>('http://localhost:3000/messages')
+      .subscribe(
+        (response) => {
+          console.log("Full API Response for Messages:", response); // Debugging output
+  
+          if (!response || !Array.isArray(response.messages)) {
+            console.error("Invalid API response format for messages:", response);
+            this.messages = [];
+            return;
+          }
+  
+          this.messages = response.messages;
+          this.maxMessageId = this.getMaxId();
+  
+          // Emit updated message list
+          this.messageChangedEvent.next([...this.messages]);
+        },
+        (error) => {
+          console.error('Error fetching messages:', error);
+          this.messages = []; // Prevents null reference issues
         }
-        this.messages = messages;
-        this.maxMessageId = this.getMaxId();
-        this.messageChangedEvent.next(this.messages.slice());
-      },
-      (error: any) => {
-        console.error('Error fetching messages:', error);
-      });
+      );
   }
+  
 
   storeMessages() {
     let messages = JSON.stringify(this.messages);
@@ -53,9 +63,36 @@ export class MessageService {
   }
 
   addMessage(message: Message) {
-    this.messages.push(message);
-    this.storeMessages();
+    if (!message) {
+      return;
+    }
+  
+    // Make sure id of the new Message is empty
+    message.id = '';  // You may want to set it as an empty string or leave it for the server to generate.
+  
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+  
+    // Add to database
+    this.http.post<{ message: string, messages: Message }>('http://localhost:3000/messages', 
+      message,
+      { headers: headers })
+      .subscribe(
+        (responseData) => {
+          // Add new message to messages array
+          this.messages.push(responseData.messages);
+          this.sortAndSend(); 
+        },
+        (error) => {
+          console.error('Error adding message:', error);
+        }
+      );
   }
+
+  private sortAndSend() {
+    this.messages.sort((a, b) => a.id.localeCompare(b.id)); // Sort documents alphabetically
+    this.messageChangedEvent.next(this.messages.slice()); // Emit the updated list
+  }
+  
 
   getMaxId(): number {
     let maxId = 0;

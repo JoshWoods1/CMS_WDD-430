@@ -26,4 +26,23 @@ export class MessageListComponent {
   onAddMessage(message: Message) {
     this.messages.push(message);
   }
+
+  getMessages() {
+    this.messageService.getMessages().subscribe(
+      (response) => {
+        console.log("Full API Response for Messages:", response);
+
+        if (!response || !Array.isArray(response.messages)) {
+          console.error('Invalid API response format:', response);
+          return;
+        }
+
+        // Store the messages and handle any additional logic
+        this.messages = response.messages;
+      },
+      (error) => {
+        console.error('Error fetching messages:', error);
+      }
+    );
+  }
 }
